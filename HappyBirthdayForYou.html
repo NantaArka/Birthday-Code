@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For You Elen</title>
+<style>
+:root{--bg1:#fff1e6;--bg2:#ffd0e6;--card:#ffffffd9;--text:#3b2447;--muted:#6f5a7c;--accent:#e63e7c;--accent2:#ffb703;--on:#fff;--shadow:0 10px 30px #7a2a6026;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#1d1230;--bg2:#431a4f;--card:#2a1a3de6;--text:#fbeefe;--muted:#cbb5d6;--accent:#ff6fa3;--accent2:#ffc83d;--on:#2a0f22;--shadow:0 10px 30px #0009;color-scheme:dark}}
+:root[data-theme="dark"]{--bg1:#1d1230;--bg2:#431a4f;--card:#2a1a3de6;--text:#fbeefe;--muted:#cbb5d6;--accent:#ff6fa3;--accent2:#ffc83d;--on:#2a0f22;--shadow:0 10px 30px #0009;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100%;display:grid;place-items:center;font-family:ui-rounded,"Nunito","Segoe UI",system-ui,sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg1);overflow-x:hidden}
+.screen{width:100%;max-width:520px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;animation:in .5s ease both}
+.screen[hidden]{display:none}
+@keyframes in{from{opacity:0;transform:translateY(14px)}}
+h1,h2{margin:0;line-height:1.15;outline:none}
+h1{font-size:clamp(2rem,8vw,3.2rem)}
+h2{font-size:clamp(1.5rem,6vw,2rem)}
+p{margin:0;line-height:1.55;color:var(--muted);font-size:1.05rem}
+.big{font-size:clamp(5rem,26vw,8rem);line-height:1;animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px) rotate(-4deg)}}
+.btn{font:inherit;font-weight:800;font-size:1.1rem;min-height:54px;padding:0 30px;border:0;border-radius:999px;background:var(--accent);color:var(--on);cursor:pointer;box-shadow:var(--shadow);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.96)}
+.btn.alt{background:var(--accent2);color:#3b2447}
+.link{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;min-height:44px;padding:0 12px;cursor:pointer}
+.btn:focus-visible,.link:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+.hud{width:min(100%,460px);display:flex;align-items:center;gap:12px;font-weight:800}
+.bar{flex:1;height:14px;border-radius:99px;background:var(--card);overflow:hidden;box-shadow:inset 0 1px 4px #0003}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .25s}
+.stage{position:relative;width:min(100%,460px);height:min(60dvh,540px);min-height:320px;border-radius:26px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none}
+.stage.hit{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+canvas{display:block;width:100%;height:100%}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:22px;background:var(--card);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.overlay[hidden]{display:none}
+.hint{font-size:.9rem;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;width:100%}
+.card{background:var(--card);border-radius:20px;padding:16px;box-shadow:var(--shadow);font-weight:700;color:var(--text);animation:in .6s ease both}
+.card span{display:block;font-size:2rem;margin-bottom:6px}
+.card:nth-child(2){animation-delay:.15s}.card:nth-child(3){animation-delay:.3s}
+.msg{background:var(--card);border-radius:22px;padding:18px 20px;box-shadow:var(--shadow);color:var(--text);white-space:pre-line}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.confetti{position:fixed;top:-16px;width:10px;height:14px;border-radius:2px;pointer-events:none;z-index:50;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
+.theme{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;font-size:1.3rem;width:44px;height:44px;border-radius:50%;border:0;background:var(--card);cursor:pointer;z-index:10}
+@media(max-width:480px){.screen{padding:16px 12px}}
+@media(prefers-reduced-motion:reduce){.confetti{display:none}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</head>
+<body>
+<button class="theme" id="theme" aria-label="Toggle dark mode">🌓</button>
+
+<main>
+<section class="screen" id="intro">
+  <div class="big" aria-hidden="true">🎁</div>
+  <h1 tabindex="-1">Psst… <span>Bestie</span>!</h1>
+  <p>Someone left a little surprise for you.<br>Ready to open it?</p>
+  <button class="btn" id="open">Open your gift</button>
+</section>
+
+<section class="screen" id="game" hidden>
+  <h2 tabindex="-1">Catch the gifts! 🎁</h2>
+  <div class="hud" aria-live="polite">
+    <div class="bar" role="progressbar" aria-label="Gifts caught"><i id="fill"></i></div>
+    <span id="score">0/12</span><span id="lives" aria-label="Lives left">❤️❤️❤️</span>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="cv" aria-label="Catch-the-gifts game"></canvas>
+    <div class="overlay" id="ov">
+      <h2 id="ovT">Ready?</h2>
+      <p id="ovP">Drag (or use ← →) to move the basket.<br>Catch the goodies, dodge the lemons 🍋</p>
+      <button class="btn" id="play">Start</button>
+      <button class="link" id="skip" hidden>Skip the game</button>
+    </div>
+  </div>
+  <p class="hint">Catch <b id="tgt">12</b> to unlock the surprise</p>
+</section>
+
+<section class="screen" id="reveal" hidden>
+  <div class="big" aria-hidden="true">🎂</div>
+  <h1 tabindex="-1">Happy Birthday, <span class="name">Bestie</span>!</h1>
+  <div class="msg" id="msg"></div>
+  <div class="cards" id="cards"></div>
+  <div class="row">
+    <button class="btn alt" id="wish">Make a wish 🕯️</button>
+    <button class="btn" id="again">Play again</button>
+  </div>
+  <p id="from"></p>
+</section>
+</main>
+
+<script>
+// ✏️ Personalize here (or share a link ending in ?to=Name&from=You)
+const CONFIG = {
+  name: "Elen Monik Agustina",
+  from: "Your Bestie",
+  target: 12,
+  message: "Happy Birthday, Elen! from 15 to 16 🎉🎂\n\nI hope your day is filled with love, laughter, and all the cake you can eat! You deserve the best on your special day and always. Here's to another year of amazing adventures and unforgettable memories. Cheers to you! 🥳💖",
+  reasons: [
+    ["🌟", "You're an amazing friend who always knows how to make me smile."],
+    ["🎨", "Your creativity and talent inspire me every day."],
+    ["💖", "You have a heart of gold and always put others first."],
+    ["🌈", "You bring color and joy into my life just by being you."]
+  ]
+};
+const q = new URLSearchParams(location.search);
+if (q.get("to")) CONFIG.name = q.get("to").slice(0, 30);
+if (q.get("from")) CONFIG.from = q.get("from").slice(0, 30);
+
+const $ = s => document.querySelector(s);
+document.querySelectorAll(".name").forEach(n => n.textContent = CONFIG.name);
+$("#msg").textContent = CONFIG.message;
+$("#from").textContent = "With love, " + CONFIG.from + " 💖";
+$("#tgt").textContent = CONFIG.target;
+CONFIG.reasons.forEach(([e, t]) => {
+  const d = document.createElement("div"); d.className = "card";
+  const s = document.createElement("span"); s.textContent = e;
+  d.append(s, t); $("#cards").append(d);
+});
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.hidden = s.id !== id);
+  const h = $("#" + id + " h1, #" + id + " h2"); if (h) h.focus({preventScroll: true});
+  scrollTo(0, 0);
+}
+function confetti(n = 70) {
+  const c = ["#ff4f8b", "#ffb703", "#3ac7a8", "#6c5ce7", "#ff8a3d"];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("i"); s.className = "confetti";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.background = c[i % c.length];
+    s.style.animationDuration = 2.2 + Math.random() * 2 + "s";
+    s.style.animationDelay = Math.random() * .6 + "s";
+    document.body.append(s); setTimeout(() => s.remove(), 5200);
+  }
+}
+const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms) } catch (e) {} };
+
+// ---------- Minigame ----------
+const stage = $("#stage"), cv = $("#cv"), ctx = cv.getContext("2d");
+const GOOD = ["🎁", "🎂", "🧁", "🎈", "🍰", "⭐"], BAD = "🍋";
+let W = 0, H = 0, raf = 0, last = 0, running = false, paused = false;
+let score = 0, lives = 3, spawn = 0, items = [], bx = 0, tx = 0, dir = 0;
+
+function size() {
+  const d = devicePixelRatio || 1;
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W * d; cv.height = H * d;
+  ctx.setTransform(d, 0, 0, d, 0, 0);
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+}
+addEventListener("resize", () => { if (!$("#game").hidden) { size(); tx = bx = Math.min(bx, W - 30) } });
+
+function hud() {
+  $("#score").textContent = score + "/" + CONFIG.target;
+  $("#fill").style.width = Math.min(100, score / CONFIG.target * 100) + "%";
+  $("#lives").textContent = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+}
+function overlay(t, p, b) {
+  $("#ovT").textContent = t; $("#ovP").textContent = p; $("#play").textContent = b;
+  $("#ov").hidden = false; $("#play").focus({preventScroll: true});
+}
+function begin() {
+  size();
+  if (!paused) { score = 0; lives = 3; items = []; spawn = 0; bx = tx = W / 2; hud() }
+  paused = false; $("#ov").hidden = true; running = true;
+  last = performance.now(); raf = requestAnimationFrame(frame);
+}
+function stop() { running = false; cancelAnimationFrame(raf) }
+
+function frame(t) {
+  if (!running) return;
+  const dt = Math.min((t - last) / 1000, .05); last = t;
+  update(dt); draw(); raf = requestAnimationFrame(frame);
+}
+function update(dt) {
+  tx = Math.max(32, Math.min(W - 32, tx + dir * 440 * dt));
+  bx += (tx - bx) * Math.min(1, dt * 14);
+  spawn -= dt;
+  if (spawn <= 0) {
+    spawn = Math.max(.4, .95 - score * .04);
+    const bad = Math.random() < .2 + Math.min(.12, score * .01);
+    items.push({x: 24 + Math.random() * (W - 48), y: -24, vy: 130 + score * 9 + Math.random() * 60,
+      e: bad ? BAD : GOOD[Math.random() * GOOD.length | 0], bad});
+  }
+  for (let i = items.length - 1; i >= 0; i--) {
+    const it = items[i]; it.y += it.vy * dt;
+    if (it.y > H - 78 && it.y < H - 30 && Math.abs(it.x - bx) < 48) {
+      items.splice(i, 1);
+      if (it.bad) {
+        lives--; buzz(60); stage.classList.remove("hit"); void stage.offsetWidth; stage.classList.add("hit"); hud();
+        if (lives <= 0) return lose();
+      } else {
+        score++; buzz(15); hud();
+        if (score >= CONFIG.target) return win();
+      }
+    } else if (it.y > H + 30) items.splice(i, 1);
+  }
+}
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.font = "34px serif";
+  items.forEach(it => ctx.fillText(it.e, it.x, it.y));
+  ctx.font = "60px serif"; ctx.fillText("🧺", bx, H - 38);
+}
+function lose() {
+  stop(); draw();
+  overlay("Yah kamu kalah🍋", "Jangan khawatir bes", "Coba Lagi");
+  $("#skip").hidden = false;
+}
+function win() {
+  stop(); draw(); confetti(60); buzz(120);
+  setTimeout(() => { show("reveal"); confetti(90) }, 700);
+}
+
+stage.addEventListener("pointermove", e => { tx = e.clientX - stage.getBoundingClientRect().left });
+stage.addEventListener("pointerdown", e => { tx = e.clientX - stage.getBoundingClientRect().left });
+addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft" || e.key === "a") dir = -1;
+  if (e.key === "ArrowRight" || e.key === "d") dir = 1;
+});
+addEventListener("keyup", e => {
+  if (["ArrowLeft", "ArrowRight", "a", "d"].includes(e.key)) dir = 0;
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && running) { stop(); paused = true; overlay("Paused", "Take your time.", "Resume") }
+});
+
+// ---------- Flow ----------
+$("#open").onclick = () => { show("game"); size(); hud(); $("#play").focus({preventScroll: true}) };
+$("#play").onclick = begin;
+$("#skip").onclick = () => { show("reveal"); confetti() };
+$("#again").onclick = () => { show("game"); size(); score = 0; lives = 3; items = []; paused = false; hud(); $("#skip").hidden = true;
+  overlay("Ready?", "Drag (or use ← →) to move the basket.\nCatch the goodies, dodge the lemons 🍋", "Start") };
+$("#wish").onclick = e => { e.target.textContent = "Wish made! 💨✨"; confetti(100); buzz(40) };
+$("#theme").onclick = () => {
+  const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+};
+$("#ovP").style.whiteSpace = "pre-line";
+</script>
+</body>
+</html>
